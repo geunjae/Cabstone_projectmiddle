@@ -1,0 +1,111 @@
+using UnityEngine;
+using System.Collections;
+
+public class Control : MonoBehaviour
+{
+
+    Rigidbody2D rigid;
+    Vector3 moveDirection;
+    Vector2 curPos;
+    Vector2 chaPos;
+    float angle = 0f;    
+
+    tk2dSpriteAnimationClip charClip;
+    tk2dSpriteAnimator charAni;
+    bool aniTurn = true;
+    bool click = true;
+    public bool isClear = true;
+
+    float jumpRate = 3f;
+    float nextJump = -1f;
+    // Use this for initialization
+    void Start()
+    {
+        rigid = GetComponent<Rigidbody2D>();
+        charAni = GetComponent<tk2dSpriteAnimator>();   
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        angle = GetAngle(chaPos, curPos);
+        curPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        chaPos = this.transform.position;
+        //moveDirection = new Vector3(0f, 0f, -60f * GetAngle(chaPos, curPos));
+
+        //if (curPos.y > chaPos.y)
+        //{
+        //    transform.localRotation = Quaternion.Euler(moveDirection);
+        //}
+       
+            if (Input.GetMouseButtonDown(0)) //좌버튼
+            {
+                rigid.gravityScale = 0f;
+                aniTurn = !aniTurn;
+                click = true;
+            }
+
+        if (Input.GetKeyUp("space") && click)
+        {
+            charAni.playAutomatically = true;
+            Animationturn(aniTurn);
+            click = false;
+
+            rigid.gravityScale = 0.05f;
+            nextJump = Time.time + jumpRate;
+
+
+            if (curPos.y < chaPos.y && curPos.x > chaPos.x)
+            {
+                rigid.AddForce(new Vector2(2f, 0), ForceMode2D.Impulse);
+            }
+            else if (curPos.y < chaPos.y && curPos.x < chaPos.x)
+            {
+                rigid.AddForce(new Vector2(-2f, 0), ForceMode2D.Impulse);
+            }
+
+            else if (Mathf.Abs(-60f * angle) >= 5)
+            {
+                rigid.AddForce(new Vector2(2f * angle, Mathf.Abs(3f * angle)), ForceMode2D.Impulse);
+            }
+
+            else
+                rigid.AddForce(new Vector2(1f * angle, 3.5f), ForceMode2D.Impulse);
+
+
+            // StartCoroutine(coScale(defaultScale, 1.0f, targetScale)); && Time.time > nextJump
+            // StartCoroutine(coScale(defaultScale, targetScale,1.0f ));  nextJump = Time.time + jumpRate;        
+        }
+        if (nextJump < Time.time && !click)
+        {
+            rigid.gravityScale = 5f;
+            isClear = false;
+        }
+        
+    }
+
+    float GetAngle(Vector3 ptCenter, Vector3 ptDest)
+    {
+        float fX, fY;
+        float fAngle;
+
+        fX = ptDest.x - ptCenter.x;
+        fY = ptDest.y - ptCenter.y;
+        fAngle = Mathf.Atan(fX / fY);
+
+        return fAngle;
+
+    }
+    void Animationturn(bool term)
+    {
+        if(term)
+        {
+            charAni.Play("Right");
+        }
+        else
+        {
+            charAni.Play("Left");
+        }  
+
+    }
+}
