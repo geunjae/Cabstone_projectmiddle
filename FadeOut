@@ -1,0 +1,15 @@
+using UnityEngine;
+using System.Collections;
+
+public class ResizingTest : MonoBehaviour {
+
+	private SpriteRenderer _mySpirteRender;
+
+	void Start()
+	{
+		Rect bound = Utility.bound3D (1f);
+
+		_mySpirteRender = GetComponent<SpriteRenderer>();
+		transform.localScale = Utility.FullSizeSprite (transform.localScale, _mySpirteRender, bound);
+	}
+}
