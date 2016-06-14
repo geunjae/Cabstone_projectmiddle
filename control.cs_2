@@ -18,6 +18,9 @@ public class Control : MonoBehaviour
 
     float jumpRate = 3f;
     float nextJump = -1f;
+
+    public AudioClip Top_1;
+    public AudioClip Top_2;
     // Use this for initialization
     void Start()
     {
@@ -30,13 +33,7 @@ public class Control : MonoBehaviour
     {
         angle = GetAngle(chaPos, curPos);
         curPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        chaPos = this.transform.position;
-        //moveDirection = new Vector3(0f, 0f, -60f * GetAngle(chaPos, curPos));
-
-        //if (curPos.y > chaPos.y)
-        //{
-        //    transform.localRotation = Quaternion.Euler(moveDirection);
-        //}
+        chaPos = this.transform.position;        
        
             if (Input.GetMouseButtonDown(0)) //좌버튼
             {
@@ -71,17 +68,20 @@ public class Control : MonoBehaviour
 
             else
                 rigid.AddForce(new Vector2(1f * angle, 3.5f), ForceMode2D.Impulse);
-
-
-            // StartCoroutine(coScale(defaultScale, 1.0f, targetScale)); && Time.time > nextJump
-            // StartCoroutine(coScale(defaultScale, targetScale,1.0f ));  nextJump = Time.time + jumpRate;        
+                            
         }
         if (nextJump < Time.time && !click)
         {
             rigid.gravityScale = 5f;
             isClear = false;
         }
-        
+
+        if (chaPos.x > 4f || chaPos.x < -4f)
+        {
+            rigid.gravityScale = 5f;
+            isClear = false;
+        }
+
     }
 
     float GetAngle(Vector3 ptCenter, Vector3 ptDest)
@@ -101,11 +101,22 @@ public class Control : MonoBehaviour
         if(term)
         {
             charAni.Play("Right");
+            PlaySound(Top_1);
         }
         else
         {
             charAni.Play("Left");
+            PlaySound(Top_2);
         }  
 
+    }
+    void PlaySound(AudioClip source)
+    {
+        if (GetComponent<AudioSource>() && source)
+        {
+            AudioSource audioplayer = GetComponent<AudioSource>();
+            audioplayer.clip = source;
+            audioplayer.Play();
+        }
     }
 }
