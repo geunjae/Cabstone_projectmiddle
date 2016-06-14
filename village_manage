@@ -1,0 +1,60 @@
+using UnityEngine;
+using System.Collections;
+using System.IO;
+
+public class Village_manage : MonoBehaviour {
+
+    string m_strPath = "HG_Data/StreamingAssets/maidens.txt";
+    public GameObject Dtsprite1;
+    public GameObject Dtsprite2;
+    public GameObject Dtsprite3;
+    public GameObject Dtsprite4;
+    bool creatmai = true;
+    int maidenNum = 0;
+
+    // Use this for initialization
+    void Start () {
+
+        maidenNum = int.Parse(ReadFile(m_strPath));  
+
+        while (creatmai)
+        {
+            if (maidenNum >= 4)
+            {
+                Instantiate(Dtsprite4, Dtsprite4.transform.position, Dtsprite4.transform.rotation);               
+            }
+            if(maidenNum >= 3)
+            {
+                Instantiate(Dtsprite3, Dtsprite3.transform.position, Dtsprite3.transform.rotation);
+            }
+            if (maidenNum >= 2)
+            {
+                Instantiate(Dtsprite2, Dtsprite2.transform.position, Dtsprite2.transform.rotation);
+            }
+            if (maidenNum >= 1)
+            {
+                Instantiate(Dtsprite1, Dtsprite1.transform.position, Dtsprite1.transform.rotation);
+                break;
+            }
+            if (maidenNum == 0)
+            { break; }
+        }        
+        
+    }
+	
+	// Update is called once per frame
+	void Update () {
+	
+
+	}
+    string ReadFile(string filepathIncludingFileName)
+    {
+
+        StreamReader sr = File.OpenText(filepathIncludingFileName);
+        string input = "";
+        input = sr.ReadToEnd();
+        sr.Close();
+
+        return input;
+    }
+}
