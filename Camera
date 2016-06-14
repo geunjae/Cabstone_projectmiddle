@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections;
+using System.IO;
 
-public class FadeInOut : MonoBehaviour
+public class FallingCamera : MonoBehaviour
 {
 
     private Color _fadeColor;
@@ -9,40 +10,65 @@ public class FadeInOut : MonoBehaviour
 
     public Transform ImageTf;
     public Transform overTf;
+    public Transform clearTf;
 
     public float _fadeTime;
-    public float _waitTime;
-    bool _isLoadScene;
-    bool _isclearScene;
+    public float _waitTime;   
+    public bool _isclearScene = false;
     public string _ClearloadSceneName = null;
     public string _DeadloadSceneName = null;
 
     public GameObject A;
     Transform AT;
     Vector2 trans;
+    public float timedelay = 2f;
+
+    public AudioClip down_ing;
+    public AudioClip down_com;
+    public AudioClip down_fail;
+
     void Start()
     {
-        _fadeColor = new Color(0f, 0f, 0f, 0f);
-        _isclearScene = false;
-        _isLoadScene = false;
+        _fadeColor = new Color(0f, 0f, 0f, 0f);            
         AT = A.transform;
+        PlaySound(down_ing);
     }
 
     void Update()
     {
-        trans.Set(0f, AT.position.y);
-        if (A.transform.position.y >= -0.25 && !_isclearScene)
+        if (transform.position.y >= 0 && !_isclearScene)
         {
-            transform.position = Vector2.Lerp(transform.position, trans, 2f * Time.deltaTime);            
-        }
+            transform.position = Vector2.Lerp(transform.position, AT.position, timedelay * Time.deltaTime);
 
-        if (this.transform.position.y >= 39f)       
-        {          
+        }
+        if (Input.GetKeyUp("space"))
+        { 
+            if (AT.position.y <= -1.25f && AT.position.y >= - 2.7f)
+            {
+                _isclearScene = true;
+                _fadeImage.color = _fadeColor;
+                transform.position = new Vector3(transform.position.x, transform.position.y, -20f);
+                clearTf.position = new Vector3(transform.position.x, transform.position.y, -19f);
+                StartCoroutine(FadeOut());
+                PlaySound(down_com);
+            }            
+            else
+            {
+                _fadeImage.color = _fadeColor;
+                transform.position = new Vector3(transform.position.x, transform.position.y, -20f);
+                overTf.position = new Vector3(transform.position.x, transform.position.y, -19f);
+                StartCoroutine(FadeOut());
+                PlaySound(down_fail);
+            }
+
+        }
+        if(AT.position.y < -4)
+        {
             _fadeImage.color = _fadeColor;
-            _isclearScene = true;
-            transform.position = new Vector3(0,transform.position.y,-20f);          
-            overTf.position = new Vector3(0, transform.position.y, -19f);           
+            transform.position = new Vector3(transform.position.x, transform.position.y, -20f);
+            overTf.position = new Vector3(transform.position.x, transform.position.y, -19f);
             StartCoroutine(FadeOut());
+            PlaySound(down_fail);
         }
 
     }
@@ -58,31 +84,41 @@ public class FadeInOut : MonoBehaviour
             _fadeColor.a = 1.0f - Mathf.Clamp01(elapsedTime / _fadeTime);
             _fadeImage.color = _fadeColor;
         }
-       // if (_fadeSetting._fadeOut)
-       //     StartCoroutine(FadeOut());
+        // if (_fadeSetting._fadeOut)
+        //     StartCoroutine(FadeOut());
     }
 
     IEnumerator FadeOut()
     {
         float elapsedTime = 0f;
 
-        //yield return new WaitForSeconds(_waitTime);
-              
-       
+        //yield return new WaitForSeconds(_waitTime);      
 
         while (elapsedTime < _fadeTime)
         {
             yield return 0;
-                //WaitForEndOfFrame();
+            //WaitForEndOfFrame();
             elapsedTime += Time.deltaTime;
-            _fadeColor.a = Mathf.Clamp01(elapsedTime / _fadeTime);           
+            _fadeColor.a = Mathf.Clamp01(elapsedTime / _fadeTime);
             _fadeImage.color = _fadeColor;
-        }        
+        }
 
         if (_isclearScene)
         {
             if (_ClearloadSceneName != null)
-                UnityEngine.SceneManagement.SceneManager.LoadScene(_ClearloadSceneName);           
+                UnityEngine.SceneManagement.SceneManager.LoadScene(_ClearloadSceneName);
         }
+        else
+            UnityEngine.SceneManagement.SceneManager.LoadScene(_DeadloadSceneName);
     }
+    void PlaySound(AudioClip source)
+    {
+        if (GetComponent<AudioSource>() && source)
+        {
+            AudioSource audioplayer = GetComponent<AudioSource>();
+            audioplayer.clip = source;
+            audioplayer.Play();
+        }       
+    }
+
 }
