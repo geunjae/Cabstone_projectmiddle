@@ -1,0 +1,25 @@
+using UnityEngine;
+using System.Collections;
+
+public class Character_Fall : MonoBehaviour {
+
+    Rigidbody2D rigid;
+    // Use this for initialization
+    void Start () {
+
+        rigid = GetComponent<Rigidbody2D>();
+        rigid.AddForce(new Vector2(0f, -6f), ForceMode2D.Impulse);
+    }
+	
+	// Update is called once per frame
+	void Update () {        
+       
+
+        if (Input.GetKeyUp("space"))
+        {           
+                rigid.Sleep();  
+        }
+
+
+    }
+}
