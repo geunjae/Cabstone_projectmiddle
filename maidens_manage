@@ -1,0 +1,93 @@
+using UnityEngine;
+using System.Collections;
+using System.IO;
+
+public class Maidens_manage : MonoBehaviour {
+
+    tk2dSprite charAni;
+    string m_strPath = "HG_Data/StreamingAssets/maidens.txt";
+    string ani = "";
+    int spriteId;    
+    public FallingCamera maincam;
+
+    // Use this for initialization
+    void Start() {
+
+        //string filename = Application.streamingAssetsPath;  
+        charAni = GetComponent<tk2dSprite>();
+        ani = ReadFile(m_strPath);
+        spriteId = int.Parse(ReadFile(m_strPath));
+        switch (spriteId)
+        {
+            case 0:
+                charAni.SetSprite(0);
+                break;
+            case 1:
+                charAni.SetSprite(1);
+                break;
+            case 2:
+                charAni.SetSprite(2);
+                break;
+            case 3:
+                charAni.SetSprite(3);
+                break;
+            default:
+                break;
+
+        }        
+
+    }
+
+    // Update is called once per frame
+    void Update() {
+        if (maincam._isclearScene)
+        {
+            switch (spriteId)
+            {
+                case 0:
+                    WriteFile("1");
+                    maincam._isclearScene = false;
+                    break;
+                case 1:
+                    WriteFile("2");
+                    maincam._isclearScene = false;
+                    break;
+                case 2:
+                    WriteFile("3");
+                    maincam._isclearScene = false;
+                    break;
+                case 3:
+                    WriteFile("4");
+                    maincam._isclearScene = false;
+                    break;
+                default:
+                    break;
+
+            }
+        }
+    }
+
+    string ReadFile(string filepathIncludingFileName)
+    {
+
+        StreamReader sr = File.OpenText(filepathIncludingFileName);
+        string input = "";
+        input = sr.ReadToEnd();
+        sr.Close();
+
+        return input;
+    }
+
+   void WriteFile(string cash)
+   {
+          StreamWriter sw = new StreamWriter(m_strPath);
+          sw.Write(cash);
+          sw.Flush();
+          sw.Close();
+
+    }
+}
+
+
+
+
